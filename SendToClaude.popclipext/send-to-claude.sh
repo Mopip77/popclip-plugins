@@ -13,9 +13,10 @@ log "========== 脚本开始执行 =========="
 # 保存选中内容到临时文件
 TEMP_FILE="/tmp/claude-context-$(date +%s).txt"
 
-# 从标准输入读取选中的内容
-cat > "$TEMP_FILE"
+# 从 PopClip 环境变量读取选中的内容
+echo "$POPCLIP_TEXT" > "$TEMP_FILE"
 log "已保存选中内容到: $TEMP_FILE"
+log "内容长度: ${#POPCLIP_TEXT} 字符"
 
 # 清理超过1天的旧临时文件
 find /tmp -name "claude-context-*.txt" -mtime +1 -delete 2>/dev/null

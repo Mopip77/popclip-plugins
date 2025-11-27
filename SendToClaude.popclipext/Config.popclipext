@@ -1,6 +1,6 @@
 # popclip
 name: Send to Claude
-icon: symbol:bubble.left.and.bubble.right.fill
+icon: claude-color.svg
 identifier: com.custom.sendtoclaude
 language: shell
 shell script file: send-to-claude.sh
