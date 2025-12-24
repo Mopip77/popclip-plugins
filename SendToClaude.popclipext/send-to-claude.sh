@@ -31,6 +31,10 @@ tell application "iTerm"
 
     -- 在新窗口中执行命令
     tell current session of newWindow
+        -- 先查看文件内容
+        write text "cat ${TEMP_FILE}"
+        delay 0.5
+        -- 然后执行 claude code 命令
         write text "claude code"
         delay 2.5
         write text "@${TEMP_FILE}"
