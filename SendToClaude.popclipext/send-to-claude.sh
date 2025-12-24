@@ -32,7 +32,7 @@ tell application "iTerm"
     -- 在新窗口中执行命令
     tell current session of newWindow
         write text "claude code"
-        delay 0.5
+        delay 2.5
         write text "@${TEMP_FILE}"
     end tell
 end tell
