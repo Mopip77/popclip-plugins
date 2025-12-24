@@ -21,6 +21,10 @@ log "内容长度: ${#POPCLIP_TEXT} 字符"
 # 清理超过1天的旧临时文件
 find /tmp -name "claude-context-*.txt" -mtime +1 -delete 2>/dev/null
 
+# 从 PopClip 配置读取延迟时间，默认 2.5 秒
+DELAY_TIME=${POPCLIP_OPTION_DELAY_TIME:-2.5}
+log "延迟时间: ${DELAY_TIME} 秒"
+
 # 使用 AppleScript 创建新的 iTerm2 窗口并执行命令
 log "开始执行 AppleScript..."
 
@@ -36,7 +40,7 @@ tell application "iTerm"
         delay 0.5
         -- 然后执行 claude code 命令
         write text "claude code"
-        delay 2.5
+        delay ${DELAY_TIME}
         write text "@${TEMP_FILE}"
     end tell
 end tell

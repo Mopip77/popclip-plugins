@@ -4,3 +4,8 @@ icon: claude-color.svg
 identifier: com.custom.sendtoclaude
 language: shell
 shell script file: send-to-claude.sh
+options:
+  - identifier: delay_time
+    label: Delay Time (seconds)
+    type: string
+    default value: "2.5"
