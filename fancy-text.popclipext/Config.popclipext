@@ -1,0 +1,13 @@
+# popclip
+name: Fancy Text
+icon: fancy-a.svg
+identifier: com.custom.fancytext
+language: javascript
+javascript file: fancy-text.js
+options:
+  - identifier: style
+    label: Fancy Text Style
+    type: multiple
+    values: [sans-serif-bold-italic, bold-script, script, sans-serif-bold, bold, italic, bold-italic, double-struck, monospace]
+    value labels: [Sans-serif Bold Italic (𝘼𝘽𝘾), Bold Script (𝓐𝓑𝓒), Script (𝒜ℬ𝒞), Sans-serif Bold (𝗔𝗕𝗖), Bold (𝐀𝐁𝐂), Italic (𝐴𝐵𝐶), Bold Italic (𝑨𝑩𝑪), Double-struck (𝔸𝔹ℂ), Monospace (𝙰𝙱𝙲)]
+    default value: sans-serif-bold-italic
