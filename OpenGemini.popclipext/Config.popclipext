@@ -1,0 +1,11 @@
+# popclip
+name: Open Gemini
+icon: gemini-icon.svg
+identifier: com.custom.opengemini
+language: shell
+shell script file: open-gemini.sh
+options:
+  - identifier: gemini_base_url
+    label: Gemini Base URL
+    type: string
+    default value: "https://gemini.google.com/app"
