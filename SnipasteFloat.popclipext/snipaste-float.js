@@ -42,6 +42,41 @@ function runSnipaste(args) {
   }
 }
 
+function downloadImage(url, ext) {
+  const ts = Date.now();
+  const safeExt = ext && /^[a-z0-9]+$/i.test(ext) ? ext.toLowerCase() : "img";
+  const tmpPath = "/tmp/snipaste-float-" + ts + "." + safeExt;
+  const result = popclip.executeShellCommand(
+    "/usr/bin/curl",
+    [
+      "-fsSL",
+      "--max-time", String(DOWNLOAD_TIMEOUT_SECONDS),
+      "-o", tmpPath,
+      url,
+    ]
+  );
+  if (!result || result.status !== 0) {
+    throw new DownloadError(
+      "curl exit " + (result && result.status) + ": " + (result && result.stderr)
+    );
+  }
+  // Reject zero-byte downloads.
+  const sizeRes = popclip.executeShellCommand("/usr/bin/stat", ["-f", "%z", tmpPath]);
+  const size = sizeRes && parseInt((sizeRes.stdout || "0").trim(), 10);
+  if (!size || size <= 0) {
+    throw new DownloadError("downloaded file is empty");
+  }
+  return tmpPath;
+}
+
+function pasteHtml(html)        { runSnipaste(["paste", "--html", html]); }
+function pasteImageFile(path)   { runSnipaste(["paste", "--files", path]); }
+function pastePlain(text)       { runSnipaste(["paste", "--plain", text]); }
+function pasteImageUrl(url, ext) {
+  const local = downloadImage(url, ext);
+  pasteImageFile(local);
+}
+
 function normalizePath(p) {
   if (typeof p !== "string") return "";
   let out = p.trim();
