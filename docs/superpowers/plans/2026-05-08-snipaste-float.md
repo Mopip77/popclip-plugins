@@ -647,7 +647,7 @@ Float the selected content on the desktop using the Snipaste CLI. Auto-classifie
 - **Dependency:** [Snipaste](https://www.snipaste.com/) installed at `/Applications/Snipaste.app`
 ```
 
-Then update the `### 📁 Project Structure` block in the English section to add the new folder under the existing three. Insert these three lines before `└── README.md`:
+Then update the `### 📁 Project Structure` block in the English section. Locate the existing tree (which lists OpenGemini, SendToClaude, fancy-text, README in that order). Insert SnipasteFloat between `fancy-text.popclipext/` and `README.md`:
 
 ```
 ├── SnipasteFloat.popclipext/
@@ -656,7 +656,7 @@ Then update the `### 📁 Project Structure` block in the English section to add
 │   └── snipaste-float.js
 ```
 
-(And turn the existing `├── fancy-text.popclipext/` line's contents into the alphabetical/order-correct sibling — keep existing order, just insert SnipasteFloat between fancy-text and README.)
+Make sure `fancy-text.popclipext/`'s prefix is still `├──` (not `└──`) since it's no longer the last entry, and `SnipasteFloat.popclipext/` uses `├──` while only `README.md` keeps the `└──` corner.
 
 - [ ] **Step 2: Add the 中文 Snipaste Float section**
 
