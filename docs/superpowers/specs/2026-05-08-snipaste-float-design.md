@@ -36,8 +36,10 @@ module: snipaste-float.js
 requirements: [text]
 options: []
 # capture rich-text representations so classify() can read input.html
-captureHtml: true
+capture html: true
 ```
+
+The YAML key is `capture html` (space-separated, not camelCase) — matches PopClip's documented convention and the existing plugins in this repo (`shell script file`, `default value`).
 
 No user-facing options. The Snipaste binary path is a constant inside the JS file.
 
@@ -63,6 +65,9 @@ Inputs we read:
 
 3. **Image URL** — `isUrl === true` and the URL's path (query/fragment stripped) ends in an image extension
    → download with `curl -fsSL --max-time 10 -o /tmp/snipaste-float-<ts>.<ext> <url>`, then `Snipaste paste --files <tmpPath>`. Download failure is a hard error (no fallback to plain text).
+   The URL string fed to `curl` comes from `popclip.input.data.urls[0]` if present, otherwise falls back to `popclip.input.text.trim()`. Picking one field consistently — don't read both.
+   `<ext>` is the URL path's final extension, lowercased, used to keep the temp filename predictable.
+   If `isUrl === true` but the URL does **not** end in an image extension, fall through to step 4 (the URL string is floated as plain text).
 
 4. **Plain text fallback** — everything else
    → `Snipaste paste --plain <text>`
@@ -122,7 +127,7 @@ action(input)
 
 - **`fileExists(path)` → `boolean`** — `executeShellCommand("test", ["-f", path])`, exit 0 means yes.
 
-- **`log(message)`** — appends `[ISO-timestamp] <message>\n` to `/tmp/snipaste-float.log` via `executeShellCommand("/bin/sh", ["-c", 'printf "%s\n" "$1" >> /tmp/snipaste-float.log', "--", line])`.
+- **`log(message)`** — appends `[ISO-timestamp] <message>` (one per line) to `/tmp/snipaste-float.log` via `executeShellCommand("/bin/sh", ["-c", "printf '%s\\n' \"$1\" >> /tmp/snipaste-float.log", "--", line])`. Note the literal `\n` in the printf format string must survive into shell — use double-quoted JS with `\\n`, or single-quoted JS that contains the unescaped `\n` for shell to interpret. Implementer: verify the resulting log file actually has line breaks.
 
 - **`userMessage(error)`** — maps internal error types to short user-facing strings shown via `popclip.showText`:
   - `SnipasteNotInstalledError` → `"Snipaste 未安装或路径不对"`
@@ -176,12 +181,12 @@ No rotation. Future enhancement if needed.
 `classify` is a pure function and can be exercised in Node directly. Add a guard:
 
 ```js
-if (typeof require !== "undefined" && require.main === module) {
+if (typeof require !== "undefined" && typeof module !== "undefined" && require.main === module) {
   runSelfTest();
 }
 ```
 
-PopClip's runtime never executes the file as a Node main, so this block is dormant in production.
+PopClip's JS runtime is a custom sandbox (not Node) and does not define a Node-style `require` / `module`, so this block stays dormant in production. Implementer: during first install, verify by checking `/tmp/snipaste-float.log` shows the action ran and **not** the self-test output.
 
 `runSelfTest()` covers:
 
