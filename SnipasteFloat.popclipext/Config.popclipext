@@ -2,7 +2,7 @@
 name: Snipaste Float
 identifier: com.custom.snipastefloat
 icon: snipaste-icon.svg
-language: javascript
-javascript file: snipaste-float.js
+language: shell
+shell script file: snipaste-float.sh
 requirements: [text]
 capture html: true
