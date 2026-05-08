@@ -74,7 +74,11 @@ function pasteImageFile(path)   { runSnipaste(["paste", "--files", path]); }
 function pastePlain(text)       { runSnipaste(["paste", "--plain", text]); }
 function pasteImageUrl(url, ext) {
   const local = downloadImage(url, ext);
-  pasteImageFile(local);
+  try {
+    pasteImageFile(local);
+  } finally {
+    popclip.executeShellCommand("/bin/rm", ["-f", local]);
+  }
 }
 
 function normalizePath(p) {

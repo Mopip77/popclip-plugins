@@ -123,6 +123,7 @@ For more details, see the [PopClip Extensions Documentation](https://github.com/
 - macOS 10.13 or later
 - PopClip app
 - For OpenGemini and SendToClaude: Python 3 or Perl (for URL encoding)
+- For Snipaste Float: Snipaste app installed at `/Applications/Snipaste.app`
 
 ### 📄 License
 
@@ -247,6 +248,7 @@ popclip-plugins/
 - macOS 10.13 或更高版本
 - PopClip 应用
 - OpenGemini 和 SendToClaude 需要: Python 3 或 Perl(用于 URL 编码)
+- Snipaste Float 需要: Snipaste 应用安装在 `/Applications/Snipaste.app`
 
 ### 📄 许可证
 
