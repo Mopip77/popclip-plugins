@@ -134,6 +134,51 @@ function classify(input, deps) {
   return { kind: "text", payload: { text } };
 }
 
+function fileExistsReal(path) {
+  if (typeof popclip === "undefined" || !popclip.executeShellCommand) return false;
+  const r = popclip.executeShellCommand("/bin/test", ["-f", path]);
+  return !!r && r.status === 0;
+}
+
+function dispatch(decision) {
+  switch (decision.kind) {
+    case "html":      return pasteHtml(decision.payload.html);
+    case "imageFile": return pasteImageFile(decision.payload.path);
+    case "imageUrl":  return pasteImageUrl(decision.payload.url, decision.payload.ext);
+    case "text":      return pastePlain(decision.payload.text);
+    default:
+      throw new Error("unknown decision kind: " + decision.kind);
+  }
+}
+
+function userMessage(err) {
+  if (err instanceof SnipasteNotInstalledError) return "Snipaste 未安装或路径不对";
+  if (err instanceof DownloadError) return "图片下载失败";
+  if (err instanceof SnipasteError) return "Snipaste 调用失败";
+  return "处理失败";
+}
+
+function action(input) {
+  const summary =
+    "len=" + ((input && input.text && input.text.length) || 0) +
+    " html=" + (!!(input && input.html)) +
+    " isUrl=" + !!(input && input.isUrl) +
+    " paths=" + ((input && input.data && input.data.paths && input.data.paths.length) || 0);
+  log("start " + summary);
+  try {
+    const decision = classify(input, { fileExists: fileExistsReal });
+    log("decision: " + decision.kind);
+    dispatch(decision);
+  } catch (e) {
+    log("error: " + e.message + (e.stack ? "\n" + e.stack : ""));
+    if (typeof popclip !== "undefined" && popclip.showText) {
+      popclip.showText(userMessage(e));
+    }
+  }
+}
+
+exports.action = action;
+
 // --- Self-test (Node only; PopClip's JS runtime never enters this block) ---
 if (
   typeof require !== "undefined" &&
