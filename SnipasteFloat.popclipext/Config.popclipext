@@ -3,6 +3,6 @@ name: Snipaste Float
 identifier: com.custom.snipastefloat
 icon: snipaste-icon.svg
 language: javascript
-module: snipaste-float.js
+javascript file: snipaste-float.js
 requirements: [text]
 capture html: true

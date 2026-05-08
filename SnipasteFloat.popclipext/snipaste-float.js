@@ -181,7 +181,12 @@ function action(input) {
   }
 }
 
-exports.action = action;
+// Snippet-style entry: PopClip executes this file each time the action runs.
+// Call action() with popclip.input directly (matches the convention in
+// fancy-text.js). The typeof guard keeps the Node-based self-test below working.
+if (typeof popclip !== "undefined" && popclip.input) {
+  action(popclip.input);
+}
 
 // --- Self-test (Node only; PopClip's JS runtime never enters this block) ---
 if (
