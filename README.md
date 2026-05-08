@@ -52,6 +52,20 @@ Transform regular text into fancy Unicode mathematical alphanumeric symbols.
   - Double-struck (𝔸𝔹ℂ)
   - Monospace (𝙰𝙱𝙲)
 
+#### 4. **Snipaste Float** 📌
+Float the selected content on the desktop using the Snipaste CLI. Auto-classifies the selection.
+
+- **Features:**
+  - Plain text → floating text pin
+  - Rich text (HTML) → rendered HTML pin
+  - Local image path → image pin
+  - Image URL → downloaded and pinned as image
+
+- **Detection priority:** HTML → local image file → image URL → plain text (fallback)
+
+- **Configuration:** None
+- **Dependency:** [Snipaste](https://www.snipaste.com/) installed at `/Applications/Snipaste.app`
+
 ### 🚀 Installation
 
 1. **Install PopClip** (if not already installed):
@@ -79,6 +93,10 @@ popclip-plugins/
 │   ├── Config.popclipext
 │   ├── fancy-a.svg
 │   └── fancy-text.js               # JavaScript implementation
+├── SnipasteFloat.popclipext/
+│   ├── Config.popclipext
+│   ├── snipaste-icon.svg
+│   └── snipaste-float.js
 └── README.md
 ```
 
@@ -158,6 +176,20 @@ MIT License - Feel free to use and modify these plugins.
   - 双线体 (𝔸𝔹ℂ)
   - 等宽字体 (𝙰𝙱𝙲)
 
+#### 4. **Snipaste Float** 📌
+使用 Snipaste CLI 将选中内容悬浮在桌面上。自动识别内容类型。
+
+- **功能特性:**
+  - 纯文本 → 文字悬浮贴图
+  - 富文本（HTML）→ HTML 渲染贴图
+  - 本地图片路径 → 图片贴图
+  - 图片 URL → 下载后作为图片贴图
+
+- **识别优先级:** HTML → 本地图片文件 → 图片 URL → 纯文本（兜底）
+
+- **配置选项:** 无
+- **依赖:** [Snipaste](https://www.snipaste.com/) 安装在 `/Applications/Snipaste.app`
+
 ### 🚀 安装方法
 
 1. **安装 PopClip**(如果尚未安装):
@@ -185,6 +217,10 @@ popclip-plugins/
 │   ├── Config.popclipext
 │   ├── fancy-a.svg
 │   └── fancy-text.js               # JavaScript 实现
+├── SnipasteFloat.popclipext/
+│   ├── Config.popclipext
+│   ├── snipaste-icon.svg
+│   └── snipaste-float.js
 └── README.md
 ```
 
