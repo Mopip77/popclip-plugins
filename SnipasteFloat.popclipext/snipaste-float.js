@@ -16,6 +16,7 @@ function normalizePath(p) {
   if (typeof p !== "string") return "";
   let out = p.trim();
   if (out.startsWith("file://")) out = out.slice("file://".length);
+  if (out.startsWith("localhost/")) out = out.slice("localhost".length);
   if (out.startsWith("~/")) {
     const home = (typeof process !== "undefined" && process.env && process.env.HOME) || "";
     if (home) out = home + out.slice(1);
@@ -129,6 +130,15 @@ function runSelfTest() {
         data: { urls: ["https://example.com"] },
       },
       expectKind: "text",
+    },
+    {
+      name: "file:// URL path normalizes and resolves -> imageFile",
+      input: {
+        text: "file://localhost/x/a.png",
+        data: { paths: ["file://localhost/x/a.png"] },
+      },
+      fileExists: (p) => p === "/x/a.png",
+      expectKind: "imageFile",
     },
   ];
   let failed = 0;
