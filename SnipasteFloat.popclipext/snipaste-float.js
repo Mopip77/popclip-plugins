@@ -12,11 +12,60 @@ function isImageExt(ext) {
   return IMAGE_EXTS.has(ext.toLowerCase());
 }
 
+function normalizePath(p) {
+  if (typeof p !== "string") return "";
+  let out = p.trim();
+  if (out.startsWith("file://")) out = out.slice("file://".length);
+  if (out.startsWith("~/")) {
+    const home = (typeof process !== "undefined" && process.env && process.env.HOME) || "";
+    if (home) out = home + out.slice(1);
+  }
+  return out;
+}
+
+function extOf(path) {
+  const dot = path.lastIndexOf(".");
+  if (dot < 0 || dot === path.length - 1) return "";
+  return path.slice(dot + 1).toLowerCase();
+}
+
+function urlPathExt(url) {
+  // Strip query and fragment, then take the extension of the path.
+  let s = url;
+  const hashIdx = s.indexOf("#");
+  if (hashIdx >= 0) s = s.slice(0, hashIdx);
+  const queryIdx = s.indexOf("?");
+  if (queryIdx >= 0) s = s.slice(0, queryIdx);
+  return extOf(s);
+}
+
 // classify: pure function. Decides what kind of paste to perform.
 // deps.fileExists(path) -> boolean — injected so self-test can stub.
 function classify(input, deps) {
-  // Filled in by Task 3.
-  return { kind: "text", payload: { text: (input && input.text) || "" } };
+  const html = input && typeof input.html === "string" ? input.html : "";
+  if (html.length > 0) {
+    return { kind: "html", payload: { html } };
+  }
+
+  const paths = (input && input.data && Array.isArray(input.data.paths)) ? input.data.paths : [];
+  if (paths.length >= 1) {
+    const candidate = normalizePath(paths[0]);
+    if (isImageExt(extOf(candidate)) && deps && deps.fileExists && deps.fileExists(candidate)) {
+      return { kind: "imageFile", payload: { path: candidate } };
+    }
+  }
+
+  if (input && input.isUrl === true) {
+    const urls = (input.data && Array.isArray(input.data.urls)) ? input.data.urls : [];
+    const url = urls.length > 0 ? urls[0] : (typeof input.text === "string" ? input.text.trim() : "");
+    const ext = urlPathExt(url);
+    if (url && isImageExt(ext)) {
+      return { kind: "imageUrl", payload: { url, ext } };
+    }
+  }
+
+  const text = input && typeof input.text === "string" ? input.text : "";
+  return { kind: "text", payload: { text } };
 }
 
 // --- Self-test (Node only; PopClip's JS runtime never enters this block) ---
@@ -30,7 +79,57 @@ if (
 
 function runSelfTest() {
   const cases = [
-    // Filled in by Task 3.
+    {
+      name: "plain text -> text",
+      input: { text: "hello", html: "" },
+      expectKind: "text",
+    },
+    {
+      name: "rich text with html -> html",
+      input: { text: "hello", html: "<b>hello</b>" },
+      expectKind: "html",
+    },
+    {
+      name: "plain text mentioning <div> -> text (no false-positive HTML)",
+      input: { text: "see <div> tag", html: "" },
+      expectKind: "text",
+    },
+    {
+      name: "image path that exists -> imageFile",
+      input: { text: "/x/a.png", data: { paths: ["/x/a.png"] } },
+      fileExists: () => true,
+      expectKind: "imageFile",
+    },
+    {
+      name: "image path that does not exist -> text (fallback)",
+      input: { text: "/x/missing.png", data: { paths: ["/x/missing.png"] } },
+      fileExists: () => false,
+      expectKind: "text",
+    },
+    {
+      name: "non-image path -> text (extension check)",
+      input: { text: "/x/foo.txt", data: { paths: ["/x/foo.txt"] } },
+      fileExists: () => true,
+      expectKind: "text",
+    },
+    {
+      name: "image URL -> imageUrl",
+      input: {
+        text: "https://x.com/a.png",
+        isUrl: true,
+        data: { urls: ["https://x.com/a.png"] },
+      },
+      expectKind: "imageUrl",
+    },
+    {
+      name: "non-image URL -> text",
+      input: {
+        text: "https://example.com",
+        isUrl: true,
+        data: { urls: ["https://example.com"] },
+      },
+      expectKind: "text",
+    },
   ];
   let failed = 0;
   for (const c of cases) {
