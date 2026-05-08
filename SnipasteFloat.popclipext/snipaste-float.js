@@ -12,6 +12,36 @@ function isImageExt(ext) {
   return IMAGE_EXTS.has(ext.toLowerCase());
 }
 
+function log(message) {
+  if (typeof popclip === "undefined" || !popclip.executeShellCommand) return;
+  const line = "[" + new Date().toISOString() + "] " + String(message);
+  // Note: the \n in the printf format is interpreted by the shell, not JS.
+  // Using double-quoted JS so \\n becomes a literal backslash-n in the shell argv.
+  popclip.executeShellCommand(
+    "/bin/sh",
+    ["-c", "printf '%s\\n' \"$1\" >> " + LOG_FILE, "--", line]
+  );
+}
+
+class SnipasteNotInstalledError extends Error {}
+class SnipasteError extends Error {}
+class DownloadError extends Error {}
+
+function runSnipaste(args) {
+  const result = popclip.executeShellCommand(SNIPASTE_BIN, args);
+  // popclip.executeShellCommand returns { status, stdout, stderr } per the PopClip JS API.
+  // Status 127 typically means "not found"; treat any non-zero as failure.
+  if (!result || typeof result.status !== "number") {
+    throw new SnipasteError("no result from Snipaste");
+  }
+  if (result.status === 127 || (result.stderr && /No such file or directory/i.test(result.stderr))) {
+    throw new SnipasteNotInstalledError(result.stderr || "Snipaste not found");
+  }
+  if (result.status !== 0) {
+    throw new SnipasteError(result.stderr || ("exit " + result.status));
+  }
+}
+
 function normalizePath(p) {
   if (typeof p !== "string") return "";
   let out = p.trim();
