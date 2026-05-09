@@ -65,7 +65,7 @@ Float the selected content on the desktop using the Snipaste CLI. Auto-classifie
 - **Detection priority:** Mermaid → HTML → local image file → image URL → plain text (fallback)
 
 - **Configuration:** None
-- **Dependencies:** [Snipaste](https://www.snipaste.com/) installed at `/Applications/Snipaste.app`. Optional: [`mmdc`](https://github.com/mermaid-js/mermaid-cli) (`@mermaid-js/mermaid-cli`) on `PATH` for Mermaid rendering — without it, Mermaid selections silently fall back to plain-text float.
+- **Dependency:** [Snipaste](https://www.snipaste.com/) installed at `/Applications/Snipaste.app`. Optional: [`mmdc`](https://github.com/mermaid-js/mermaid-cli) (`@mermaid-js/mermaid-cli`) on `PATH` for Mermaid rendering — without it, Mermaid selections silently fall back to plain-text float.
 
 ### 🚀 Installation
 
