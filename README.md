@@ -60,11 +60,12 @@ Float the selected content on the desktop using the Snipaste CLI. Auto-classifie
   - Rich text (HTML) → rendered HTML pin
   - Local image path → image pin
   - Image URL → downloaded and pinned as image
+  - Mermaid source (lines starting with `flowchart`, `graph`, `sequenceDiagram`, etc.) → rendered PNG pin
 
-- **Detection priority:** HTML → local image file → image URL → plain text (fallback)
+- **Detection priority:** Mermaid → HTML → local image file → image URL → plain text (fallback)
 
 - **Configuration:** None
-- **Dependency:** [Snipaste](https://www.snipaste.com/) installed at `/Applications/Snipaste.app`
+- **Dependencies:** [Snipaste](https://www.snipaste.com/) installed at `/Applications/Snipaste.app`. Optional: [`mmdc`](https://github.com/mermaid-js/mermaid-cli) (`@mermaid-js/mermaid-cli`) on `PATH` for Mermaid rendering — without it, Mermaid selections silently fall back to plain-text float.
 
 ### 🚀 Installation
 
@@ -185,11 +186,12 @@ MIT License - Feel free to use and modify these plugins.
   - 富文本（HTML）→ HTML 渲染贴图
   - 本地图片路径 → 图片贴图
   - 图片 URL → 下载后作为图片贴图
+  - Mermaid 源码（以 `flowchart`、`graph`、`sequenceDiagram` 等开头）→ 渲染为 PNG 后悬浮
 
-- **识别优先级:** HTML → 本地图片文件 → 图片 URL → 纯文本（兜底）
+- **识别优先级:** Mermaid → HTML → 本地图片文件 → 图片 URL → 纯文本（兜底）
 
 - **配置选项:** 无
-- **依赖:** [Snipaste](https://www.snipaste.com/) 安装在 `/Applications/Snipaste.app`
+- **依赖:** [Snipaste](https://www.snipaste.com/) 安装在 `/Applications/Snipaste.app`。可选：[`mmdc`](https://github.com/mermaid-js/mermaid-cli)（`@mermaid-js/mermaid-cli`）在 `PATH` 上 — 缺失时 Mermaid 选区会静默回退为纯文本悬浮。
 
 ### 🚀 安装方法
 
