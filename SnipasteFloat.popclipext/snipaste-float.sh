@@ -65,6 +65,37 @@ trim() {
     echo "$s"
 }
 
+# Returns 0 if the first line of $1 starts with a known Mermaid diagram
+# keyword (case-insensitive, leading/trailing whitespace ignored). Trailing
+# args after the keyword on the same line are allowed (e.g. "flowchart TD").
+# The whitelist is intentionally narrow.
+#
+# We extract and strip the first line ourselves rather than going through the
+# repo's existing trim() helper, which has a separate pre-existing bug.
+is_mermaid_first_line() {
+    local input first_line stripped lower
+    input="$1"
+    # First line up to the first newline.
+    first_line="${input%%$'\n'*}"
+    # Strip leading whitespace (spaces and tabs).
+    stripped="${first_line#"${first_line%%[^ $'\t']*}"}"
+    # Strip trailing whitespace.
+    stripped="${stripped%"${stripped##*[^ $'\t']}"}"
+    lower="$(printf '%s' "$stripped" | tr '[:upper:]' '[:lower:]')"
+    case "$lower" in
+        flowchart|flowchart\ *|flowchart$'\t'*) return 0 ;;
+        graph|graph\ *|graph$'\t'*) return 0 ;;
+        sequencediagram|sequencediagram\ *|sequencediagram$'\t'*) return 0 ;;
+        classdiagram|classdiagram\ *|classdiagram$'\t'*) return 0 ;;
+        statediagram|statediagram\ *|statediagram$'\t'*) return 0 ;;
+        statediagram-v2|statediagram-v2\ *|statediagram-v2$'\t'*) return 0 ;;
+        erdiagram|erdiagram\ *|erdiagram$'\t'*) return 0 ;;
+        gantt|gantt\ *|gantt$'\t'*) return 0 ;;
+        pie|pie\ *|pie$'\t'*) return 0 ;;
+    esac
+    return 1
+}
+
 main() {
     log "========== start =========="
     local text="${POPCLIP_TEXT:-}"
@@ -146,7 +177,8 @@ main() {
     log "done"
 }
 
-# Clean up old tmp files (>1 day) opportunistically; ignore errors.
-find /tmp -name 'snipaste-float-*' -type f -mtime +1 -delete 2>/dev/null || true
-
-main "$@"
+if [[ -z "${SNIPASTE_FLOAT_TEST_MODE:-}" ]]; then
+    # Clean up old tmp files (>1 day) opportunistically; ignore errors.
+    find /tmp -name 'snipaste-float-*' -type f -mtime +1 -delete 2>/dev/null || true
+    main "$@"
+fi
