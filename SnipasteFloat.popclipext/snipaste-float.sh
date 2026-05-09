@@ -96,6 +96,51 @@ is_mermaid_first_line() {
     return 1
 }
 
+# Render Mermaid source ($1) to PNG and pin it via Snipaste.
+# Returns 0 on success, 1 on any failure (silent fallback path).
+try_render_mermaid() {
+    local source="$1"
+
+    if ! command -v mmdc >/dev/null 2>&1; then
+        log "mermaid: mmdc not found on PATH, skipping render"
+        return 1
+    fi
+
+    local ts input output
+    ts="$(date +%s%N 2>/dev/null || date +%s)"
+    input="/tmp/snipaste-float-${ts}.mmd"
+    output="/tmp/snipaste-float-${ts}.png"
+
+    if ! printf '%s' "$source" > "$input" 2>>"$LOG_FILE"; then
+        log "mermaid: failed to write input file $input"
+        rm -f "$input"
+        return 1
+    fi
+
+    log "mermaid: rendering $input -> $output"
+    # macOS lacks timeout(1); use the system Perl's alarm() to bound mmdc.
+    if ! /usr/bin/perl -e 'alarm shift; exec @ARGV' 15 \
+            mmdc -i "$input" -o "$output" -t default -b white -s 2 --quiet \
+            >>"$LOG_FILE" 2>&1; then
+        log "mermaid: mmdc failed or timed out"
+        rm -f "$input" "$output"
+        return 1
+    fi
+
+    if [[ ! -s "$output" ]]; then
+        log "mermaid: output file missing or empty"
+        rm -f "$input" "$output"
+        return 1
+    fi
+
+    # Clean up both temp files when the script exits, regardless of outcome.
+    trap 'rm -f "$input" "$output"' EXIT
+
+    log "mermaid: pinning $output"
+    run_snipaste paste --files "$output"
+    return 0
+}
+
 main() {
     log "========== start =========="
     local text="${POPCLIP_TEXT:-}"
