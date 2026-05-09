@@ -313,7 +313,14 @@ Then renumber the existing comment headers:
 - `# --- 3. Image URL branch ---` → `# --- 4. Image URL branch ---`
 - `# --- 4. Plain text fallback ---` → `# --- 5. Plain text fallback ---`
 
-This is a comment-only change but worth doing so future readers can follow the dispatch order.
+Also update the file-level header comment on line 3 (currently
+`# Detection priority: HTML → local image file → image URL → plain text.`) to:
+
+```
+# Detection priority: Mermaid → HTML → local image file → image URL → plain text.
+```
+
+These are comment-only changes but worth doing so future readers see an accurate dispatch order at the top of the file.
 
 - [ ] **Step 2: Parse-check**
 
