@@ -1,6 +1,6 @@
 #!/bin/bash
 # Snipaste Float — classify the selection and float it on the desktop via Snipaste CLI.
-# Detection priority: HTML → local image file → image URL → plain text.
+# Detection priority: Mermaid → HTML → local image file → image URL → plain text.
 
 set -u
 
@@ -149,7 +149,19 @@ main() {
     local urls="${POPCLIP_URLS:-}"
     log "text_len=${#text} html_len=${#html} urls_lines=$(printf '%s' "$urls" | grep -c . || true)"
 
-    # --- 1. HTML branch -------------------------------------------------
+    # --- 1. Mermaid branch ---------------------------------------------
+    # First-line keyword whitelist. On any render failure, fall through
+    # silently to the existing chain (HTML → imageFile → imageUrl → text).
+    if is_mermaid_first_line "$full_text"; then
+        log "decision: mermaid (attempting render)"
+        if try_render_mermaid "$full_text"; then
+            log "done"
+            return 0
+        fi
+        log "mermaid render failed; falling through"
+    fi
+
+    # --- 2. HTML branch -------------------------------------------------
     if [[ -n "$html" ]]; then
         log "decision: html"
         run_snipaste paste --html "$html"
@@ -160,7 +172,7 @@ main() {
     local trimmed
     trimmed="$(trim "$full_text")"
 
-    # --- 2. Local image file branch ------------------------------------
+    # --- 3. Local image file branch ------------------------------------
     # Heuristic: if the entire selection is a path-shaped string ending in an image ext
     # and the file exists, treat as imageFile.
     if [[ "$trimmed" == /* || "$trimmed" == "~/"* || "$trimmed" == file://* ]]; then
@@ -176,7 +188,7 @@ main() {
         fi
     fi
 
-    # --- 3. Image URL branch -------------------------------------------
+    # --- 4. Image URL branch -------------------------------------------
     # POPCLIP_URLS is newline-separated. Use the first URL only, and only if the
     # selection is just that URL (avoid false positives in mixed text).
     if [[ -n "$urls" ]]; then
@@ -216,7 +228,7 @@ main() {
         fi
     fi
 
-    # --- 4. Plain text fallback ----------------------------------------
+    # --- 5. Plain text fallback ----------------------------------------
     log "decision: text"
     run_snipaste paste --plain "$text"
     log "done"
