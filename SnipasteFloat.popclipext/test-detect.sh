@@ -39,6 +39,7 @@ assert_match "pie"                       $'pie\n"A" : 50\n"B" : 50'
 assert_match "leading whitespace"        $'   flowchart TD\nA --> B'
 assert_match "uppercase keyword"         $'FLOWCHART TD\nA --> B'
 assert_match "trailing whitespace on kw" $'flowchart   \nA --> B'
+assert_match "tab between kw and args"   $'flowchart\tTD\nA --> B'
 
 # Negative cases.
 assert_no_match "java class"             $'class Foo {\n}'
