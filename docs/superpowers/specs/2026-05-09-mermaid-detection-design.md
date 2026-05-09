@@ -44,19 +44,31 @@ adds complexity for a niche case.
 
 On a positive detection, `try_render_mermaid` runs:
 
-1. Generate a timestamped pair of temp paths under `/tmp/`:
+1. Check `command -v mmdc` first. If missing, log and return 1 — do **not**
+   create temp files for a render that cannot happen.
+2. Generate a timestamped pair of temp paths under `/tmp/`:
    - input: `/tmp/snipaste-float-${ts}.mmd` (the full selection)
    - output: `/tmp/snipaste-float-${ts}.png`
-2. Write `$full_text` to the input file.
-3. Invoke `mmdc` with hardcoded defaults:
+3. Write `$full_text` to the input file.
+4. Invoke `mmdc` with hardcoded defaults:
    ```
    mmdc -i <input> -o <output> -t default -b white -s 2 --quiet
    ```
    Wrap the call in a 15-second timeout. mmdc 11.x launches puppeteer/Chromium
    on every invocation, which can take 5–8s on a cold start; 15s gives
    reasonable headroom while still bounding hangs.
-4. If `mmdc` exits non-zero, times out, or the output file is empty, return 1.
-5. On success, register a cleanup `trap` for both temp files and call
+
+   macOS has no `timeout(1)` by default. Use a portable Perl one-liner that
+   ships with the OS:
+   ```bash
+   /usr/bin/perl -e 'alarm shift; exec @ARGV' 15 \
+       mmdc -i "$input" -o "$output" -t default -b white -s 2 --quiet
+   ```
+   `alarm` raises SIGALRM after 15s, which terminates the `exec`'d process.
+   Avoids a Homebrew `coreutils`/`gtimeout` dependency.
+5. If `mmdc` exits non-zero, times out, or the output file is empty, clean up
+   both temp files (input is now orphaned) and return 1.
+6. On success, register a cleanup `trap` for both temp files and call
    `run_snipaste paste --files <output>`. Return 0.
 
 `main()` becomes:
