@@ -1,0 +1,15 @@
+# popclip
+name: Open ChatGPT
+icon: chatgpt-icon.svg
+identifier: com.custom.openchatgpt
+language: shell
+shell script file: open-chatgpt.sh
+options:
+  - identifier: chatgpt_base_url
+    label: ChatGPT Base URL
+    type: string
+    default value: "https://chatgpt.com/"
+  - identifier: prompt_port
+    label: Prompt Server Port
+    type: string
+    default value: "18232"
