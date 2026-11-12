@@ -22,7 +22,23 @@ Send selected text directly to Google Gemini AI with a single click.
 - **Configuration:**
   - `Gemini Base URL`: Customize the Gemini URL (default: `https://gemini.google.com/app`)
 
-#### 2. **Send to Claude** 💬
+#### 2. **Open ChatGPT** ⚡
+Send selected text directly to ChatGPT with a single click.
+
+- **Features:**
+  - Opens ChatGPT in your default browser
+  - Pre-fills the prompt with your selected text via the companion userscript (`?injectp=`)
+  - Long text is passed through a one-shot local HTTP server (`?injectport=`) to avoid URL truncation
+  - Configurable ChatGPT base URL and prompt server port
+  - Supports URL encoding for special characters
+
+- **Requires:** the `ChatGPT Prompt Injector` userscript (Tampermonkey). Private parameter names (`injectp` / `injectport`) are used on purpose — neither the native `?q=` nor a generic `?prompt=` — so official parameters can never collide with ours.
+
+- **Configuration:**
+  - `ChatGPT Base URL`: Customize the ChatGPT URL (default: `https://chatgpt.com/`)
+  - `Prompt Server Port`: Local port for long-text handoff (default: `18232`)
+
+#### 3. **Send to Claude** 💬
 Quickly send selected text to Claude AI assistant.
 
 - **Features:**
@@ -33,7 +49,7 @@ Quickly send selected text to Claude AI assistant.
 - **Configuration:**
   - `Delay Time`: Adjust the delay in seconds before pasting (default: `2.5`)
 
-#### 3. **Fancy Text** ✨
+#### 4. **Fancy Text** ✨
 Transform regular text into fancy Unicode mathematical alphanumeric symbols.
 
 - **Features:**
@@ -52,7 +68,7 @@ Transform regular text into fancy Unicode mathematical alphanumeric symbols.
   - Double-struck (𝔸𝔹ℂ)
   - Monospace (𝙰𝙱𝙲)
 
-#### 4. **Snipaste Float** 📌
+#### 5. **Snipaste Float** 📌
 Float the selected content on the desktop using the Snipaste CLI. Auto-classifies the selection.
 
 - **Features:**
@@ -66,6 +82,23 @@ Float the selected content on the desktop using the Snipaste CLI. Auto-classifie
 
 - **Configuration:** None
 - **Dependency:** [Snipaste](https://www.snipaste.com/) installed at `/Applications/Snipaste.app`. Optional: [`mmdc`](https://github.com/mermaid-js/mermaid-cli) (`@mermaid-js/mermaid-cli`) on `PATH` for Mermaid rendering — without it, Mermaid selections silently fall back to plain-text float.
+
+#### 6. **Remember Everywhere** 🔖
+Save the selected text, URL, or file path into OpenViking memory with one click.
+
+- **Features:**
+  - Existing local path (file or directory) → `ov add-resource` (ingests full content)
+  - Single URL → `ov add-resource` (ingests full page)
+  - Any other text → `ov add-memory` (OV classifies it server-side into identity / preferences / entities / events)
+  - Optionally prepends source context: app name, browser title, browser URL, timestamp
+  - Runs in the background — PopClip shows ✓ immediately
+  - Failure triggers a macOS notification; errors logged to `~/Library/Logs/remember-everywhere.log`
+
+- **Configuration:**
+  - `ov CLI Path`: Absolute path to the `ov` binary (default: `/Users/bjhl/.local/bin/ov`)
+  - `Attach Source Context`: Prepend source app / URL / timestamp to memories (default: on)
+
+- **Dependency:** [OpenViking](https://openviking.ai) with the `ov` CLI installed and configured.
 
 ### 🚀 Installation
 
@@ -86,6 +119,10 @@ popclip-plugins/
 │   ├── Config.popclipext          # Plugin configuration
 │   ├── gemini-icon.svg             # Plugin icon
 │   └── open-gemini.sh              # Shell script
+├── OpenChatgpt.popclipext/
+│   ├── Config.popclipext          # Plugin configuration
+│   ├── chatgpt-icon.svg            # Plugin icon
+│   └── open-chatgpt.sh             # Shell script
 ├── SendToClaude.popclipext/
 │   ├── Config.popclipext
 │   ├── claude-color.svg
@@ -123,7 +160,7 @@ For more details, see the [PopClip Extensions Documentation](https://github.com/
 
 - macOS 10.13 or later
 - PopClip app
-- For OpenGemini and SendToClaude: Python 3 or Perl (for URL encoding)
+- For OpenGemini, OpenChatgpt and SendToClaude: Python 3 or Perl (for URL encoding)
 - For Snipaste Float: Snipaste app installed at `/Applications/Snipaste.app`
 
 ### 📄 License
@@ -148,7 +185,23 @@ MIT License - Feel free to use and modify these plugins.
 - **配置选项:**
   - `Gemini Base URL`: 自定义 Gemini URL(默认: `https://gemini.google.com/app`)
 
-#### 2. **Send to Claude** 💬
+#### 2. **Open ChatGPT** ⚡
+一键将选中的文本发送到 ChatGPT。
+
+- **功能特性:**
+  - 在默认浏览器中打开 ChatGPT
+  - 通过配套用户脚本(`?injectp=`)自动填充选中文本
+  - 超长文本改用一次性本地 HTTP 服务(`?injectport=`)传递，避免 URL 截断乱码
+  - 可配置的 ChatGPT 基础 URL 与传递端口
+  - 支持特殊字符的 URL 编码
+
+- **依赖:** 需安装 `ChatGPT Prompt Injector` 用户脚本(Tampermonkey)。刻意使用私有参数名(`injectp` / `injectport`)，既不用官方原生 `?q=` 也不用通用的 `?prompt=`，确保不会和官方参数撞车。
+
+- **配置选项:**
+  - `ChatGPT Base URL`: 自定义 ChatGPT URL(默认: `https://chatgpt.com/`)
+  - `Prompt Server Port`: 长文本传递用的本地端口(默认: `18232`)
+
+#### 3. **Send to Claude** 💬
 快速将选中的文本发送到 Claude AI 助手。
 
 - **功能特性:**
@@ -159,7 +212,7 @@ MIT License - Feel free to use and modify these plugins.
 - **配置选项:**
   - `Delay Time`: 调整粘贴前的延迟秒数(默认: `2.5`)
 
-#### 3. **Fancy Text** ✨
+#### 4. **Fancy Text** ✨
 将普通文本转换为花式 Unicode 数学字母数字符号。
 
 - **功能特性:**
@@ -178,7 +231,7 @@ MIT License - Feel free to use and modify these plugins.
   - 双线体 (𝔸𝔹ℂ)
   - 等宽字体 (𝙰𝙱𝙲)
 
-#### 4. **Snipaste Float** 📌
+#### 5. **Snipaste Float** 📌
 使用 Snipaste CLI 将选中内容悬浮在桌面上。自动识别内容类型。
 
 - **功能特性:**
@@ -212,6 +265,10 @@ popclip-plugins/
 │   ├── Config.popclipext          # 插件配置
 │   ├── gemini-icon.svg             # 插件图标
 │   └── open-gemini.sh              # Shell 脚本
+├── OpenChatgpt.popclipext/
+│   ├── Config.popclipext          # 插件配置
+│   ├── chatgpt-icon.svg            # 插件图标
+│   └── open-chatgpt.sh             # Shell 脚本
 ├── SendToClaude.popclipext/
 │   ├── Config.popclipext
 │   ├── claude-color.svg
@@ -249,7 +306,7 @@ popclip-plugins/
 
 - macOS 10.13 或更高版本
 - PopClip 应用
-- OpenGemini 和 SendToClaude 需要: Python 3 或 Perl(用于 URL 编码)
+- OpenGemini、OpenChatgpt 和 SendToClaude 需要: Python 3 或 Perl(用于 URL 编码)
 - Snipaste Float 需要: Snipaste 应用安装在 `/Applications/Snipaste.app`
 
 ### 📄 许可证

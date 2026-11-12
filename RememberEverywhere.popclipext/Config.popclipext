@@ -1,0 +1,16 @@
+# popclip
+name: Remember Everywhere
+identifier: com.custom.remembereverywhere
+icon: remember-icon.svg
+language: shell
+shell script file: remember.sh
+requirements: [text]
+options:
+  - identifier: ov_path
+    label: ov CLI Path
+    type: string
+    default value: /Users/bjhl/.local/bin/ov
+  - identifier: with_context
+    label: Attach Source Context
+    type: boolean
+    default value: true
